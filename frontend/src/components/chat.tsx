@@ -76,7 +76,7 @@ export function Chat() {
 						) : null}
 					</div>
 				</ConversationContent>
-				{messages.length >= 0 ? (
+				{messages.length > 0 ? (
 					<ConversationDownload
 						aria-label="Download conversation"
 						className="border-0 bg-transparent opacity-0 shadow-none transition-opacity hover:bg-transparent group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 dark:bg-transparent dark:hover:bg-transparent"

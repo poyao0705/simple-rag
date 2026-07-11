@@ -15,14 +15,22 @@ No new state-management layer, transport configuration, repository, route, or pe
 The `Chat` component will reproduce the supplied layout:
 
 - A full-viewport-height, vertically stacked chat surface using the light slate background and foreground colors from the reference.
-- A flexible, vertically scrollable message region with comfortable top and bottom padding.
+- An AI Elements `Conversation` and `ConversationContent` message region with automatic stick-to-bottom behavior and comfortable top and bottom padding.
 - A centered message column with a maximum width of `max-w-190` and consistent spacing between messages.
 - The empty state text `Send a message to start this chat.`
 - Existing AI Elements `Message`, `MessageContent`, and `MessageResponse` components for text message parts.
 - A non-scrolling footer containing a centered `PromptInput` of the same maximum width as the messages.
 - `PromptInputBody`, `PromptInputTextarea`, `PromptInputFooter`, and `PromptInputSubmit` arranged like the supplied reference.
 
-The existing card border, fixed 600-pixel height, conversation download control, scroll button, and icon-based empty state will be removed because they are not part of the target interface.
+The existing card border, fixed 600-pixel height, scroll button, and icon-based empty state will be removed because they are not part of the target interface.
+
+## Conversation Controls
+
+`Chat` will render `ConversationDownload` only when at least one message exists. The behavior and styling will be configured through props at the `Chat` call site so the installed Conversation element retains its reusable defaults.
+
+The Conversation wrapper will act as a hover group. The download button will be transparent, borderless, shadowless, and visually hidden by default. It will fade in when the pointer is anywhere over the conversation and when keyboard focus moves within the conversation. Its accessible label will remain `Download conversation`.
+
+The separate `ConversationScrollButton` will not be rendered. Automatic scrolling comes from `Conversation` itself.
 
 ## Data Flow and States
 
@@ -39,6 +47,8 @@ The existing `App` test will be updated around the extracted component behavior.
 1. A ready chat submits trimmed text and clears the textarea.
 2. A non-ready chat disables the composer and does not submit.
 3. A chat error is rendered for the user.
+4. Conversation elements wrap the message region and the download control is omitted for an empty chat.
+5. The download control is present for a non-empty chat with the approved transparent, borderless, hover-reveal classes.
 
 Tests will mock the AI SDK hook and presentation components only at external boundaries. The implementation will be completed test-first, with each new assertion observed failing before the corresponding production change.
 

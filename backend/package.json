@@ -18,18 +18,25 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fastify": "^5.0.0",
-    "fastify-plugin": "^5.0.0",
+    "@ai-sdk/langchain": "^3.0.22",
     "@fastify/autoload": "^6.0.0",
     "@fastify/sensible": "^6.0.0",
-    "fastify-cli": "^8.0.0"
+    "@langchain/anthropic": "^1.5.1",
+    "@langchain/core": "^1.2.2",
+    "@langchain/openai": "^1.5.5",
+    "ai": "^7.0.22",
+    "fastify": "^5.0.0",
+    "fastify-cli": "^8.0.0",
+    "fastify-plugin": "^5.0.0",
+    "langchain": "^1.5.3",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
     "c8": "^11.0.0",
-    "ts-node": "^10.4.0",
     "concurrently": "^9.0.0",
     "fastify-tsconfig": "^3.0.0",
+    "ts-node": "^10.4.0",
     "typescript": "~5.9.2"
   }
 }

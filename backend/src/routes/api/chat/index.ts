@@ -5,7 +5,8 @@ import { Providers } from "../../../services/llm/providers";
 
 const chat: FastifyPluginAsync = async (fastify): Promise<void> => {
 	const modelId = process.env.OPENAI_MODEL;
-	const model = new Providers.OPENAI({ model: modelId });
+	const openaiApiKey = process.env.OPENAI_API_KEY;
+	const model = new Providers.OPENAI({ model: modelId, apiKey: openaiApiKey });
 
 	fastify.post<{ Body: { messages: UIMessage[] } }>(
 		"/",

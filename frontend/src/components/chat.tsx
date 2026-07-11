@@ -1,6 +1,11 @@
 import { useChat } from "@ai-sdk/react";
 import { useState } from "react";
 import {
+	Conversation,
+	ConversationContent,
+	ConversationDownload,
+} from "@/components/ai-elements/conversation";
+import {
 	Message,
 	MessageContent,
 	MessageResponse,
@@ -31,45 +36,54 @@ export function Chat() {
 
 	return (
 		<main className="flex h-svh min-h-0 flex-col bg-slate-50 text-slate-900">
-			<section
+			<Conversation
 				aria-live="polite"
-				className="min-h-0 flex-1 overflow-y-auto px-4 pt-14 pb-6"
+				className="group min-h-0"
 				data-testid="chat-messages"
 			>
-				<div className="mx-auto flex w-full max-w-190 flex-col gap-4">
-					{messages.length === 0 ? (
-						<p className="text-slate-500">
-							Send a message to start this chat.
-						</p>
-					) : (
-						messages.map((message) => (
-							<Message
-								data-role={message.role}
-								from={message.role}
-								key={message.id}
-							>
-								<MessageContent>
-									{message.parts.map((part, index) =>
-										part.type === "text" ? (
-											<MessageResponse key={`${message.id}-${index}`}>
-												{part.text}
-											</MessageResponse>
-										) : null,
-									)}
-								</MessageContent>
-							</Message>
-						))
-					)}
-					{status === "submitted" ? (
-						<p className="text-slate-500">Thinking…</p>
-					) : null}
-					{error ? (
-						<p className="text-red-700" role="alert">
-							{error.message}
-						</p>
-					) : null}
-				</div>
-			</section>
+				<ConversationContent className="px-4 pt-14 pb-6">
+					<div className="mx-auto flex w-full max-w-190 flex-col gap-4">
+						{messages.length === 0 ? (
+							<p className="text-slate-500">
+								Send a message to start this chat.
+							</p>
+						) : (
+							messages.map((message) => (
+								<Message
+									data-role={message.role}
+									from={message.role}
+									key={message.id}
+								>
+									<MessageContent>
+										{message.parts.map((part, index) =>
+											part.type === "text" ? (
+												<MessageResponse key={`${message.id}-${index}`}>
+													{part.text}
+												</MessageResponse>
+											) : null,
+										)}
+									</MessageContent>
+								</Message>
+							))
+						)}
+						{status === "submitted" ? (
+							<p className="text-slate-500">Thinking…</p>
+						) : null}
+						{error ? (
+							<p className="text-red-700" role="alert">
+								{error.message}
+							</p>
+						) : null}
+					</div>
+				</ConversationContent>
+				{messages.length >= 0 ? (
+					<ConversationDownload
+						aria-label="Download conversation"
+						className="border-0 bg-transparent opacity-0 shadow-none transition-opacity hover:bg-transparent group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 dark:bg-transparent dark:hover:bg-transparent"
+						messages={messages}
+					/>
+				) : null}
+			</Conversation>
 
 			<div className="shrink-0 px-4 pb-4">
 				<PromptInput

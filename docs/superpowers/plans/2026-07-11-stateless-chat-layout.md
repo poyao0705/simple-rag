@@ -174,3 +174,79 @@ Expected: all tests pass, build exits 0, and lint exits 0 with only existing gen
 git add frontend/src/App.tsx
 git commit -m "refactor: compose app from chat surface"
 ```
+
+### Task 3: Add Conversation auto-scroll and hover-reveal download
+
+**Files:**
+- Modify: `frontend/src/components/chat.tsx`
+- Modify: `frontend/src/components/chat.test.tsx`
+
+**Interfaces:**
+- Consumes: `Conversation`, `ConversationContent`, and `ConversationDownload` from `@/components/ai-elements/conversation`.
+- Produces: an auto-scrolling message region and a conditional, transparent download action.
+
+- [ ] **Step 1: Write failing Conversation composition tests**
+
+Mock the Conversation exports with stable test IDs, reset `chatState.messages` after each test, and add:
+
+```tsx
+it("uses Conversation and omits download for an empty chat", () => {
+  render(<Chat />)
+  expect(screen.getByTestId("conversation")).toBeTruthy()
+  expect(screen.getByTestId("conversation-content")).toBeTruthy()
+  expect(screen.queryByRole("button", { name: "Download conversation" })).toBeNull()
+})
+
+it("shows a transparent borderless download for a non-empty chat", () => {
+  chatState.messages = [{ id: "message-1", role: "user", parts: [{ type: "text", text: "Hello" }] }]
+  render(<Chat />)
+  const download = screen.getByRole("button", { name: "Download conversation" })
+  expect(download.className).toContain("opacity-0")
+  expect(download.className).toContain("group-hover:opacity-100")
+  expect(download.className).toContain("border-0")
+  expect(download.className).toContain("bg-transparent")
+})
+```
+
+- [ ] **Step 2: Run tests and verify RED**
+
+Run: `pnpm --dir frontend test -- src/components/chat.test.tsx`
+
+Expected: FAIL because the current Chat does not render the Conversation mocks.
+
+- [ ] **Step 3: Replace the plain message section with Conversation**
+
+Import the three Conversation exports and replace the message `<section>` with this structure while retaining the existing message mapping, thinking state, and error state inside the centered column:
+
+```tsx
+<Conversation
+  aria-live="polite"
+  className="group min-h-0"
+  data-testid="chat-messages"
+>
+  <ConversationContent className="px-4 pt-14 pb-6">
+    <div className="mx-auto flex w-full max-w-190 flex-col gap-4">
+      {/* existing empty, message, thinking, and error rendering */}
+    </div>
+  </ConversationContent>
+  {messages.length > 0 ? (
+    <ConversationDownload
+      aria-label="Download conversation"
+      className="border-0 bg-transparent opacity-0 shadow-none transition-opacity hover:bg-transparent group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 dark:bg-transparent dark:hover:bg-transparent"
+      messages={messages}
+    />
+  ) : null}
+</Conversation>
+```
+
+- [ ] **Step 4: Run component tests and verify GREEN**
+
+Run: `pnpm --dir frontend test -- src/components/chat.test.tsx`
+
+Expected: 5 tests pass.
+
+- [ ] **Step 5: Run full verification and browser QA**
+
+Run: `pnpm --dir frontend test && pnpm --dir frontend build && pnpm --dir frontend lint`
+
+Expected: tests and build pass; lint exits 0 with only existing generated-component Fast Refresh warnings. In the browser, verify the download button is visually hidden at rest, visible over the message area, transparent and borderless, and that the composer still enables after input.

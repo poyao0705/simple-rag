@@ -9,10 +9,16 @@ import type {
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Chat } from "./chat";
 
+type ChatTestMessage = {
+	id: string;
+	role: "user" | "assistant";
+	parts: Array<{ type: "text"; text: string }>;
+};
+
 const { chatState, sendMessage } = vi.hoisted(() => ({
 	chatState: {
 		error: undefined as Error | undefined,
-		messages: [],
+		messages: [] as ChatTestMessage[],
 		status: "ready",
 	},
 	sendMessage: vi.fn(),
@@ -20,6 +26,31 @@ const { chatState, sendMessage } = vi.hoisted(() => ({
 
 vi.mock("@ai-sdk/react", () => ({
 	useChat: () => ({ ...chatState, sendMessage }),
+}));
+
+vi.mock("@/components/ai-elements/conversation", () => ({
+	Conversation: ({
+		children,
+		...props
+	}: HTMLAttributes<HTMLDivElement>) => (
+		<div {...props} data-testid="conversation">
+			{children}
+		</div>
+	),
+	ConversationContent: ({
+		children,
+		...props
+	}: HTMLAttributes<HTMLDivElement>) => (
+		<div {...props} data-testid="conversation-content">
+			{children}
+		</div>
+	),
+	ConversationDownload: ({
+		messages: _messages,
+		...props
+	}: ButtonHTMLAttributes<HTMLButtonElement> & {
+		messages: ChatTestMessage[];
+	}) => <button type="button" {...props} />,
 }));
 
 vi.mock("@/components/ai-elements/message", () => ({
@@ -72,6 +103,7 @@ describe("Chat", () => {
 		cleanup();
 		sendMessage.mockReset();
 		chatState.error = undefined;
+		chatState.messages = [];
 		chatState.status = "ready";
 	});
 
@@ -110,5 +142,35 @@ describe("Chat", () => {
 		expect(screen.getByRole("alert").textContent).toBe(
 			"Could not send message.",
 		);
+	});
+
+	it("uses Conversation and omits download for an empty chat", () => {
+		render(<Chat />);
+
+		expect(screen.getByTestId("conversation")).toBeTruthy();
+		expect(screen.getByTestId("conversation-content")).toBeTruthy();
+		expect(
+			screen.queryByRole("button", { name: "Download conversation" }),
+		).toBeNull();
+	});
+
+	it("shows a transparent borderless download for a non-empty chat", () => {
+		chatState.messages = [
+			{
+				id: "message-1",
+				role: "user",
+				parts: [{ type: "text", text: "Hello" }],
+			},
+		];
+
+		render(<Chat />);
+
+		const download = screen.getByRole("button", {
+			name: "Download conversation",
+		});
+		expect(download.className).toContain("opacity-0");
+		expect(download.className).toContain("group-hover:opacity-100");
+		expect(download.className).toContain("border-0");
+		expect(download.className).toContain("bg-transparent");
 	});
 });

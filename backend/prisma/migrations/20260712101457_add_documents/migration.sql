@@ -1,3 +1,6 @@
+-- EnableExtension
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- CreateTable
 CREATE TABLE "documents" (
     "id" UUID NOT NULL,

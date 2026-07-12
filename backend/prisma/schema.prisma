@@ -17,6 +17,7 @@ model Document {
   environment String  @default("dev")
   source      String?
   title       String?
+  contentHash String @map("content_hash")
   metadata    Json    @default("{}")
 
   chunks DocumentChunk[]

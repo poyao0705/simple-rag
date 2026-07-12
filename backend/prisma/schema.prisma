@@ -25,6 +25,7 @@ model Document {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([environment, source])
   @@map("documents")
 }
 
@@ -38,7 +39,7 @@ model DocumentChunk {
   metadata Json   @default("{}")
 
   embedding    Unsupported("vector(1536)")
-  searchVector Unsupported("tsvector")     @map("search_vector")
+  searchVector Unsupported("tsvector")     @default(dbgenerated()) @map("search_vector")
 
   createdAt DateTime @default(now()) @map("created_at")
 

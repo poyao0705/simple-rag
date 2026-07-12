@@ -31,6 +31,9 @@ async function main() {
 		const url = `${DOCS_BASE}/${docPath}.md`;
 
 		const response = await fetch(url);
+		if (!response.ok) {
+			throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+		}
 		const text = await response.text();
 
 		const file = path.join(

@@ -1,8 +1,6 @@
 services:
   postgres:
-    build:
-      context: .
-      dockerfile: docker/postgres/Dockerfile
+    image: pgvector/pgvector:pg17
 
     restart: unless-stopped
 

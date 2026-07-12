@@ -11,7 +11,18 @@ import {
 } from "./ingest-docs-core";
 
 const DOCS_DIRECTORY = path.join("data", "docs", "langchain");
-const ENVIRONMENT = "dev";
+
+function requireEnvironment(): string {
+	const environment = process.env.APP_ENVIRONMENT;
+
+	if (!environment) {
+		throw new Error("APP_ENVIRONMENT is not configured");
+	}
+
+	return environment;
+}
+
+const ENVIRONMENT = requireEnvironment();
 
 async function persistDocument(input: PersistDocumentInput): Promise<void> {
 	await prisma.$transaction(async (transaction) => {
@@ -106,9 +117,7 @@ async function main(): Promise<void> {
 		console.log(`${result}: ${document.source}`);
 	}
 
-	console.log(
-		`Completed ingestion: ${ingested} ingested, ${skipped} skipped.`,
-	);
+	console.log(`Completed ingestion: ${ingested} ingested, ${skipped} skipped.`);
 }
 
 main()

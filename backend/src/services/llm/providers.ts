@@ -1,5 +1,5 @@
-import { ChatOpenAI } from "@langchain/openai";
 import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatOpenAI } from "@langchain/openai";
 
 export const Providers = {
 	OPENAI: ChatOpenAI,

@@ -3,12 +3,12 @@ import path from "node:path";
 import { Document } from "@langchain/core/documents";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../../src/lib/prisma.js";
 import {
 	ingestDocument,
 	loadDocuments,
 	type PersistDocumentInput,
-} from "./ingest-docs-core";
+} from "./ingest-docs-core.js";
 
 const DOCS_DIRECTORY = path.join("data", "docs", "langchain");
 

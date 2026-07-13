@@ -8,7 +8,7 @@ import {
 	hashContent,
 	ingestDocument,
 	loadDocuments,
-} from "./ingest-docs-core";
+} from "./ingest-docs-core.js";
 
 test("hashContent returns a deterministic SHA-256 digest", () => {
 	assert.equal(

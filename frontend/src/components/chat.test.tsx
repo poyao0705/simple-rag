@@ -12,7 +12,15 @@ import { Chat } from "./chat";
 type ChatTestMessage = {
 	id: string;
 	role: "user" | "assistant";
-	parts: Array<{ type: "text"; text: string }>;
+	parts: Array<
+		| { type: "text"; text: string }
+		| {
+				type: "source-url";
+				sourceId: string;
+				url: string;
+				title?: string;
+		  }
+	>;
 };
 
 const { chatState, sendMessage } = vi.hoisted(() => ({
@@ -29,10 +37,7 @@ vi.mock("@ai-sdk/react", () => ({
 }));
 
 vi.mock("@/components/ai-elements/conversation", () => ({
-	Conversation: ({
-		children,
-		...props
-	}: HTMLAttributes<HTMLDivElement>) => (
+	Conversation: ({ children, ...props }: HTMLAttributes<HTMLDivElement>) => (
 		<div {...props} data-testid="conversation">
 			{children}
 		</div>
@@ -85,9 +90,9 @@ vi.mock("@/components/ai-elements/prompt-input", () => ({
 	PromptInputFooter: ({ children }: HTMLAttributes<HTMLDivElement>) => (
 		<div>{children}</div>
 	),
-	PromptInputTextarea: (
-		props: TextareaHTMLAttributes<HTMLTextAreaElement>,
-	) => <textarea {...props} />,
+	PromptInputTextarea: (props: TextareaHTMLAttributes<HTMLTextAreaElement>) => (
+		<textarea {...props} />
+	),
 	PromptInputSubmit: ({
 		status: _status,
 		...props
@@ -172,5 +177,42 @@ describe("Chat", () => {
 		expect(download.className).toContain("group-hover:opacity-100");
 		expect(download.className).toContain("border-0");
 		expect(download.className).toContain("bg-transparent");
+	});
+
+	it("renders URL sources for assistant messages", () => {
+		chatState.messages = [
+			{
+				id: "message-1",
+				role: "assistant",
+				parts: [
+					{
+						type: "source-url",
+						sourceId: "source-1",
+						url: "https://example.com/streaming",
+						title: "Streaming guide",
+					},
+					{
+						type: "source-url",
+						sourceId: "source-2",
+						url: "https://example.com/subagents",
+					},
+					{ type: "text", text: "Use the messages stream." },
+				],
+			},
+		];
+
+		render(<Chat />);
+
+		fireEvent.click(screen.getByRole("button", { name: "Used 2 sources" }));
+		expect(
+			screen
+				.getByRole("link", { name: "Streaming guide" })
+				.getAttribute("href"),
+		).toBe("https://example.com/streaming");
+		expect(
+			screen
+				.getByRole("link", { name: "https://example.com/subagents" })
+				.getAttribute("href"),
+		).toBe("https://example.com/subagents");
 	});
 });

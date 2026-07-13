@@ -18,6 +18,12 @@ import {
 	PromptInputSubmit,
 	PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
+import {
+	Source,
+	Sources,
+	SourcesContent,
+	SourcesTrigger,
+} from "@/components/ai-elements/sources";
 
 export function Chat() {
 	const [input, setInput] = useState("");
@@ -48,23 +54,41 @@ export function Chat() {
 								Send a message to start this chat.
 							</p>
 						) : (
-							messages.map((message) => (
-								<Message
-									data-role={message.role}
-									from={message.role}
-									key={message.id}
-								>
-									<MessageContent>
-										{message.parts.map((part, index) =>
-											part.type === "text" ? (
-												<MessageResponse key={`${message.id}-${index}`}>
-													{part.text}
-												</MessageResponse>
-											) : null,
-										)}
-									</MessageContent>
-								</Message>
-							))
+							messages.map((message) => {
+								const sources = message.parts.filter(
+									(part) => part.type === "source-url",
+								);
+
+								return (
+									<div className="flex flex-col gap-2" key={message.id}>
+										{message.role === "assistant" && sources.length > 0 ? (
+											<Sources>
+												<SourcesTrigger count={sources.length} />
+												<SourcesContent>
+													{sources.map((source) => (
+														<Source
+															href={source.url}
+															key={source.sourceId}
+															title={source.title ?? source.url}
+														/>
+													))}
+												</SourcesContent>
+											</Sources>
+										) : null}
+										<Message data-role={message.role} from={message.role}>
+											<MessageContent>
+												{message.parts.map((part, index) =>
+													part.type === "text" ? (
+														<MessageResponse key={`${message.id}-${index}`}>
+															{part.text}
+														</MessageResponse>
+													) : null,
+												)}
+											</MessageContent>
+										</Message>
+									</div>
+								);
+							})
 						)}
 						{status === "submitted" ? (
 							<p className="text-slate-500">Thinking…</p>

@@ -1,5 +1,5 @@
 import { createAgent } from "langchain";
-import { Providers } from "../llm/providers.js";
+import { Providers } from "@/services/llm/providers.js";
 
 export type CreateAppAgentOptions = {
 	apiKey: string;

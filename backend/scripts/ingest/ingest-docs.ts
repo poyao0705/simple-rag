@@ -3,7 +3,7 @@ import path from "node:path";
 import { Document } from "@langchain/core/documents";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { prisma } from "../../src/lib/prisma.js";
+import { prisma } from "@/lib/prisma.js";
 import {
 	ingestDocument,
 	loadDocuments,

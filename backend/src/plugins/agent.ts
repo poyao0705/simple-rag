@@ -1,5 +1,5 @@
 import fp from "fastify-plugin";
-import { type AppAgent, createAppAgent } from "../services/agent/agent.js";
+import { type AppAgent, createAppAgent } from "@/services/agent/agent.js";
 
 declare module "fastify" {
 	interface FastifyInstance {

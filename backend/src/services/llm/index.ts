@@ -1,1 +1,1 @@
-export { Providers as providers } from "./providers";
+export { Providers as providers } from "./providers.js";

@@ -87,3 +87,78 @@ The limits and model names are centralized in `backend/src/services/retrieval/ut
 Frontend is built with `React` and `Vite` for build tool.
 The UI is using Vecel AI SDK -- AI Elements. Check [AI SDK AI Elements](https://elements.ai-sdk.dev)
 Nothing too fancy, I just want to make things as simple as possible
+
+## Run with Docker Compose
+
+### One-time environment setup
+
+Create the backend environment file and fill in the required API keys:
+
+```sh
+cp backend/.env.example backend/.env
+```
+
+Both modes run Prisma migrations before Fastify starts. Inside the Compose network, the backend connects to PostgreSQL through the `postgres` hostname.
+
+### Development mode
+
+Use development mode while editing the application:
+
+```sh
+docker compose -f compose.yaml -f compose.dev.yaml up --build
+```
+
+Development mode bind-mounts `frontend/` and `backend/` into their containers:
+
+- Saving frontend code triggers Vite hot-module replacement or a browser reload.
+- Saving backend code recompiles TypeScript and restarts Fastify.
+- Vite proxies `/api` requests to the `backend` Compose service.
+
+If a `package.json` or the lockfile changes, rebuild the images and refresh the anonymous dependency volumes:
+
+```sh
+docker compose -f compose.yaml -f compose.dev.yaml up --build --renew-anon-volumes
+```
+
+View development logs:
+
+```sh
+docker compose -f compose.yaml -f compose.dev.yaml logs -f backend frontend
+```
+
+Stop development mode:
+
+```sh
+docker compose -f compose.yaml -f compose.dev.yaml down
+```
+
+### Production mode
+
+Production mode builds the frontend with Vite, serves it through Nginx, and runs the compiled Fastify backend:
+
+```sh
+docker compose up --build
+```
+
+Nginx serves the frontend and proxies `/api` requests to the `backend` Compose service.
+
+View production logs:
+
+```sh
+docker compose logs -f backend frontend
+```
+
+Stop production mode:
+
+```sh
+docker compose down
+```
+
+### Service URLs
+
+The URLs are the same in both modes:
+
+- Frontend: <http://localhost:5173>
+- Backend: <http://localhost:3000>
+- Adminer: <http://localhost:8080>
+- PostgreSQL: `localhost:5432`

@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      target: development
+    command:
+      - sh
+      - -c
+      - pnpm exec prisma migrate deploy && pnpm exec prisma generate && exec pnpm dev
+    environment:
+      FASTIFY_ADDRESS: 0.0.0.0
+    volumes:
+      - ./backend:/app/backend
+      - /app/backend/node_modules
+
+  frontend:
+    build:
+      target: development
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:3000
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules

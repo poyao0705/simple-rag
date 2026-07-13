@@ -1,5 +1,7 @@
 import { createAgent } from "langchain";
+import { searchDocument } from "@/services/agent/utils/tools.js";
 import { Providers } from "@/services/llm/providers.js";
+import { SYSTEM_PROMPT } from "./utils/prompts.js";
 
 export type CreateAppAgentOptions = {
 	apiKey: string;
@@ -14,7 +16,8 @@ export function createAppAgent(options: CreateAppAgentOptions) {
 
 	return createAgent({
 		model,
-		// tools: [],
+		tools: [searchDocument],
+		systemPrompt: SYSTEM_PROMPT,
 	});
 }
 

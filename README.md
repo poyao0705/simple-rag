@@ -15,6 +15,7 @@ I'm using Postgres DB here because it provides CRUD, full text search (tsvector)
 
 - Prisma ORM for easy CRUD control, while
 - raw query for similarity/vector search (prisma still does not support them natively)
+- For the complete schema, migration, indexing, ingestion, and SQL walkthrough, see [Database full-text and vector search](docs/database-search.md).
 - Important pieces
   - vector similarity search:
   ```
